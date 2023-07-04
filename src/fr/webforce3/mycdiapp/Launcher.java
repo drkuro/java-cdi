@@ -1,80 +1,108 @@
 package fr.webforce3.mycdiapp;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 import fr.webforce3.mycdiapp.entity.Inventaire;
-import fr.webforce3.mycdiapp.entity.Produit;
-import fr.webforce3.mycdiapp.exception.NotAvaiableException;
 
 public class Launcher {
 
-	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-
-		// Je recupere la list de mon inventaire
+	public static void main(String[] args){
+		// Je récupère la liste de mon inventaire
 		Inventaire cdi = Inventaire.getInstance();
-		
-		System.out.println("Bonjour, bienvenu sur notre CDI");
-		System.out.println("Que puis-je pour vous ? ");
-		System.out.println("1- Emprunter");
-		System.out.println("2- Rendre");
-		
 		Scanner sc = new Scanner(System.in);
-		int choice = sc.nextInt();
-		
-		while(true) {
-			switch (choice) {
-			case 1: {
-				emprunterMenu(cdi);
-				break;
-			}
-			case 2: {
-				
-				break;
-			}
-			case 0:
-				System.out.println("Merci, et a bientot");
-				sc.close();
-				return;
+
+		try {
+
+		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_lsib?" +
+                "user=root&password=");
+		System.err.println("Connected!");
+      
+        System.out.println("que recherchez vous ? ");
+        String search = sc.next();
+        
+        
+        PreparedStatement stmt = 
+        		conn.prepareStatement("SELECT * FROM produits WHERE nom = ?");
+        
+        stmt.setString(1, search);
+        
+        ResultSet rs = stmt.executeQuery();
+        
+        while(rs.next()) {
+        	System.out.println(rs.getInt(1));
+        	System.out.println(rs.getString("nom"));
+        }
+
+        System.out.println("");
+		} catch (SQLException ex){
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        
+		System.out.println("Bonjour, bienvenue sur notre CDI");
+
+		boolean keep = true;
+		while (keep) {
+
+			System.out.println("Que puis-je faire pour vous ?");
+			System.out.println("1- Emprunter");
+			System.out.println("2- Rendre");
+			System.out.println("3- Ajouter un nouvel élément à l'inventaire");
+			System.out.println("4- Afficher les produits disponibles");
+			System.out.println("5- Afficher les produits empruntés");
+			System.out.println("0- Quitter");
 			
-			default:
-				System.out.println("Je n'ai pas compris");
-				return;
-			}
-		}
-	
-	}
-
-	private static void emprunterMenu(Inventaire cdi) throws Exception {
-		// TODO Auto-generated method stub
-		System.out.println("Quels produits voulez vous emprunter ? ");
-		for (Produit produit : cdi.getList()) {
-			if(produit.isAvailable()) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("id : " + produit.getId());
-				sb.append(" - nom : " + produit.getNom());
-				System.out.println(sb.toString());
-			}
-		}
-		Scanner sc = new Scanner(System.in);
-		String choice = sc.next();
-
-		while(true) {
-			for (Produit produit : cdi.getList()) {
-				if(choice.equals(produit.getId())) {
-					if(!produit.isAvailable()) {
-						throw new NotAvaiableException();
+			int choice = sc.nextInt();
+			
+			switch (choice) {
+				case 1: {
+					try {
+						cdi.emprunterMenu();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					System.out.println("Vous avez emprunter " + produit.getNom());
-					produit.setAvailable(false);
-					return;
+					break;
 				}
+				case 2: {
+					try {
+						cdi.rendreMenu();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+				}
+				case 3: {
+					cdi.addProduit();
+					break;
+				}
+				case 4: {
+					cdi.afficherDisponibles();
+					break;
+				}
+				case 5: {
+					cdi.afficherEmpruntes();
+					break;
+				}
+				case 0:
+					System.out.println("Merci, et à bientôt");
+					keep = false;
+					break;
+
+				default:
+					System.out.println("Je n'ai pas compris");
+					break;
 			}
-			throw new Exception("No product found");
 		}
-		
-		
-		
+		sc.close();
 	}
 
 }

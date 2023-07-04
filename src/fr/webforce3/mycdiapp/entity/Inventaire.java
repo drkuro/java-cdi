@@ -1,11 +1,15 @@
 package fr.webforce3.mycdiapp.entity;
 
 import java.util.ArrayList;
+import java.util.Scanner;
+
+import fr.webforce3.mycdiapp.exception.NotAvaiableException;
 
 public class Inventaire {
 
 	private static Inventaire instance;
 	protected ArrayList<Produit> list;
+    private Scanner sc = new Scanner(System.in);
 
 	private Inventaire() {
 		this.list = this.generateList();
@@ -51,7 +55,69 @@ public class Inventaire {
 	public void setList(ArrayList<Produit> list) {
 		this.list = list;
 	}
+	public void emprunterMenu() throws Exception {
+        System.out.println("Quels produits voulez-vous emprunter ?");
+        for (Produit produit : list) {
+            if (produit.isAvailable()) {
+                System.out.println(produit);
+            }
+        }
+        String choice = sc.next();
+
+        for (Produit produit : list) {
+            if (choice.equals(produit.getId())) {
+                if (!produit.isAvailable()) {
+                    throw new NotAvaiableException();
+                }
+                System.out.println("Vous avez emprunté " + produit.getNom());
+                produit.setAvailable(false);
+                return;
+            }
+        }
+        throw new Exception("Aucun produit trouvé");
+    }
+
+    public void rendreMenu() throws Exception {
+        System.out.println("Quels produits voulez-vous rendre ?");
+        for (Produit produit : list) {
+            if (!produit.isAvailable()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("id : " + produit.getId());
+                sb.append(" - nom : " + produit.getNom());
+                System.out.println(sb.toString());
+            }
+        }
+        String choice = sc.next();
+        Produit produit = list.stream()
+        		.filter(p -> p.getId().equals(choice) && !p.isAvailable())
+        		.findFirst()
+        		.orElseThrow(() -> new Exception("Aucun produit trouvé"));
+        System.out.println("Vous avez rendu " + produit.getNom());
+        produit.setAvailable(true);
+    }
+
+    public void afficherEmpruntes() {
+        System.out.println("Produits empruntés :");
+        for (Produit produit : list) {
+            if (!produit.isAvailable()) {
+                System.out.println("Nom : " + produit.getNom());
+            }
+        }
+    }
+
+    public void afficherDisponibles() {
+        System.out.println("Produits disponibles :");
+        for (Produit produit : list) {
+            if (produit.isAvailable()) {
+                System.out.println("Nom : " + produit.getNom());
+            }
+        }
+    }
 	
+	public void addProduit() {
+		Produit p = Produit.createProduit();
+		this.list.add(p);
+	}
 	
 	
 	
