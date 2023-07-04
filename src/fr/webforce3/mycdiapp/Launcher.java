@@ -16,36 +16,6 @@ public class Launcher {
 		Inventaire cdi = Inventaire.getInstance();
 		Scanner sc = new Scanner(System.in);
 
-		try {
-
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/java_lsib?" +
-                "user=root&password=");
-		System.err.println("Connected!");
-      
-        System.out.println("que recherchez vous ? ");
-        String search = sc.next();
-        
-        
-        PreparedStatement stmt = 
-        		conn.prepareStatement("SELECT * FROM produits WHERE nom = ?");
-        
-        stmt.setString(1, search);
-        
-        ResultSet rs = stmt.executeQuery();
-        
-        while(rs.next()) {
-        	System.out.println(rs.getInt(1));
-        	System.out.println(rs.getString("nom"));
-        }
-
-        System.out.println("");
-		} catch (SQLException ex){
-            // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-        
 		System.out.println("Bonjour, bienvenue sur notre CDI");
 
 		boolean keep = true;

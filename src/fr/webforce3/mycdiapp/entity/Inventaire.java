@@ -3,6 +3,7 @@ package fr.webforce3.mycdiapp.entity;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import fr.webforce3.mycdiapp.dao.LivreDAO;
 import fr.webforce3.mycdiapp.exception.NotAvaiableException;
 
 public class Inventaire {
@@ -10,23 +11,14 @@ public class Inventaire {
 	private static Inventaire instance;
 	protected ArrayList<Produit> list;
     private Scanner sc = new Scanner(System.in);
+    private LivreDAO livreDao;
 
 	private Inventaire() {
+		this.livreDao = new LivreDAO();
 		this.list = this.generateList();
 	}
-	
-	private Inventaire(ArrayList<Produit> list) {
-		this.list = list;
-	}
-	
-	public static Inventaire getInstance(ArrayList<Produit> list) {
-		if(instance == null) {
-			instance = new Inventaire(list);
-		}
-		return instance;
-		
-	}
-	
+
+
 	public static Inventaire getInstance() {
 		if(instance == null) {
 			instance = new Inventaire();
@@ -36,6 +28,7 @@ public class Inventaire {
 	
 	public ArrayList<Produit> generateList(){
 		ArrayList<Produit> list = new ArrayList<Produit>();
+		/*
 		list.add(new Livre("Harry potter", "jk rowling", "Poche"));
 		list.add(new Livre("Harry potter 2", "jk rowling", "Poche"));
 		list.add(new LivreScolaire("Les maths pour les CP", "Maths", "CP"));
@@ -43,7 +36,10 @@ public class Inventaire {
 		list.add(new Manga("Dragon Ball", "akira toriyama", "Tome 1"));
 		list.add(new Manga("Dragon Ball", "akira toriyama", "Tome 2"));
 		list.add(new JeuDeSociete("Jumanji", "Edition Collector"));
-
+		 */
+		 
+		list.addAll(livreDao.findAll());
+		
 		return list;
 		
 	}

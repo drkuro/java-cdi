@@ -10,7 +10,6 @@ abstract public class Produit {
 	protected boolean available;
 	
 	public Produit(String nom) {
-		super();
 		this.nom = nom;
 		this.id = generateId();
 		this.available = true;
