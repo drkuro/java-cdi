@@ -1,5 +1,4 @@
 package fr.webforce3.mycdiapp.entity;
-import java.util.Scanner;
 
 public class Livre extends Produit  {
     private String auteur;
@@ -7,6 +6,12 @@ public class Livre extends Produit  {
 
     public Livre(String nom, String auteur, String format) {
         super(nom);
+        this.auteur = auteur;
+        this.format = format;
+    }
+     
+    public Livre(int id, String nom, String auteur, String format) {
+        super(nom, id);
         this.auteur = auteur;
         this.format = format;
     }
@@ -35,23 +40,5 @@ public class Livre extends Produit  {
         sb.append(" - nom : " + this.getNom());
         return sb.toString();
     	}
-
-    public static Livre create() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Entrez le nom du livre : ");
-        String nom = scanner.nextLine();
-
-        System.out.println("Entrez l'auteur du livre : ");
-        String auteur = scanner.nextLine();
-
-        System.out.println("Entrez le format du livre : ");
-        String format = scanner.nextLine();
-
-        scanner.close();
-        
-        return new Livre(nom, auteur, format);
-    }
-    
     
 }
